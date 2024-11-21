@@ -8,12 +8,12 @@
     export let margin;
     export let position;
     export let scale;
-    export let tick_outer = 10;
-    export let tick_number = 10;
-    export let to_format = null;
-    export let no_domain = null;
+    export let tick_outer;
+    export let tick_number;
+    export let to_format;
+    export let no_domain;
     export let formatString = '$.of'
-    export let format_mobile = false;
+    export let format_mobile;
 
     const formatMobile = (tick) => {
         return "'" + tick.toString().slice(13,15);

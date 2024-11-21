@@ -6,6 +6,7 @@
     import { scaleLinear, scaleLog, scaleSqrt, scaleOrdinal } from 'd3-scale';
     import { csv } from 'd3-fetch';
     import { extent } from 'd3-array';
+    import * as d3 from 'd3';
     import Axis from '$lib/components/Axis.svelte';
     import Labels from '$lib/components/Labels.svelte';
     import RadialLegend from '$lib/components/RadialLegend.svelte';
@@ -33,8 +34,8 @@
     const scaleColor = scaleLinear().domain([0, 25, 50, 75 , 100]).range(["gray", "red", "green", "blue", "orange"]) 
     const scaleRadius = scaleLinear().domain([0,100]).range([2,5]) 
     
-    let width;
-    const height = 500;
+    let width = 640;
+    const height = 400;
     const margin = {top: 40, right:20, bottom: 20, left: 35}
 
     let xScale, yScale, radiusScale;
@@ -76,6 +77,32 @@
         'group D',
         'group E'
     ];
+
+
+    const x = d3.scaleLinear()
+                .domain(extent(students, (s) => +s.math_score))
+                .range([margin.left, width - margin.right]);
+
+  // Declare the y (vertical position) scale.
+    const y = d3.scaleLinear()
+                .domain(extent(students, (s) => +s.writing_score))
+                .range([height - margin.bottom, margin.top]);
+
+    const svg = d3.create('svg')
+                  .attr('width', width)
+                  .attr('height', height);
+
+    svg.append('g')
+       .attr('transform', `translate(0,${height - margin.bottom})`)
+       .call(d3.axisBottom(x));
+
+    svg.append("g")
+       .attr("transform", `translate(${margin.left},0)`)
+       .call(d3.axisLeft(y));
+
+    contain
+
+      
   </script>
   
   <!-- <svg width="1020" height="1020">
@@ -87,15 +114,15 @@
     {/each}
   </svg> -->
 
-<div
+<div id='container'></div>
+  
+<!-- <div
   class="flex max-w-3xl flex-col items-center lg:flex-row"
   bind:clientWidth={width}>
   <div class="relative">
     {#if students && width}
       <svg {width} {height}>
         <g>
-          <Axis {width} {height} {margin} scale={xScale} position="bottom" />
-          <Axis {width} {height} {margin} scale={yScale} position="left" />
           <Labels
             labelforx={true}
             {width}
@@ -122,16 +149,7 @@
             fill={colors(d.race_ethnicity)}/>
           {/each}
         </g>
-        <!-- <g transform="translate({width - margin.right},300)">
-          <RadialLegend {width} {height} {margin} {radiusScale} />
-        </g>
-        <g transform="translate({width - margin.right},130)">
-          <CategoryLegend
-            legend_data={ethnicGroups}
-            legend_color_function={colors}
-            space={80} />
-        </g> -->
       </svg>
     {/if}
   </div>
-</div>
+</div> -->
