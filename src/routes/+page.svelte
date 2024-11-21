@@ -1,22 +1,137 @@
 <script>
     //const { data } = $props()
 
-    import Papa from 'papaparse';
     import { base } from '$app/paths';
     import { onMount } from 'svelte';
+    import { scaleLinear, scaleLog, scaleSqrt, scaleOrdinal } from 'd3-scale';
+    import { csv } from 'd3-fetch';
+    import { extent } from 'd3-array';
+    import Axis from '$lib/components/Axis.svelte';
+    import Labels from '$lib/components/Labels.svelte';
+    import RadialLegend from '$lib/components/RadialLegend.svelte';
+    import CategoryLegend from '$lib/components/CategoryLegend.svelte';
 
-    let students = []
+    
+    let students 
 
-    onMount(async () => {
-        const response = await fetch(base + '/data/StudentsPerformance.csv', { headers: { 'Content-Type': 'text/csv' }})
-        let csvStudents = await response.text()
-        let parsedCsvStudents = Papa.parse(csvStudents, {header: true})
-        students = parsedCsvStudents.data
+
+    // onMount(async () => {
+    //     const response = await fetch(base + '/data/StudentsPerformance.csv', { headers: { 'Content-Type': 'text/csv' }})
+    //     let csvStudents = await response.text()
+    //     let parsedCsvStudents = Papa.parse(csvStudents, {header: true})
+    //     students = parsedCsvStudents.data
+    //     console.log(students)
+    // });
+    
+    onMount(() =>{
+        csv(base + '/data/StudentsPerformance.csv')
+        .then((unsorted_data) => unsorted_data.sort((a,b) => b.math_score - a.math_score))
+        .then((sorted_data) => (students = sorted_data))
     });
+
+    const scaleY = scaleLinear().domain([0,100]).range([20,1000])
+    const scaleColor = scaleLinear().domain([0, 25, 50, 75 , 100]).range(["gray", "red", "green", "blue", "orange"]) 
+    const scaleRadius = scaleLinear().domain([0,100]).range([2,5]) 
+    
+    let width;
+    const height = 500;
+    const margin = {top: 40, right:20, bottom: 20, left: 35}
+
+    let xScale, yScale, radiusScale;
+    
+    $: if (students) {
+      xScale = scaleLinear()
+        .domain(extent(students, (s) => +s.math_score))
+        .range([margin.left, width - margin.right]);
+      
+      yScale = scaleLinear()
+        .domain(extent(students, (s) => +s.writing_score))
+        .range([height - margin.bottom, margin.top]);
+
+      radiusScale = scaleSqrt()
+        .domain(extent(students, (s) => +s.reading_score))
+        .range([2,5])  
+    }
+
+    const colors = scaleOrdinal()
+      .range([
+        '#e0dff7',
+        '#EFB605',
+        '#FFF84A',
+        '#FF0266',
+        '#45FFC8'
+    ])
+      .domain([
+        'group A',
+        'group B',
+        'group C',
+        'group D',
+        'group E'
+    ]);
+
+    const ethnicGroups =[
+        'group A',
+        'group B',
+        'group C',
+        'group D',
+        'group E'
+    ];
   </script>
   
-  <ul>
+  <!-- <svg width="1020" height="1020">
     {#each students as student}
-    <li>{student.gender}</li>
+        <circle cx={scaleY(student.math_score)}
+                cy={scaleY(student.reading_score)}
+                r={scaleRadius(student.writing_score)}
+                style={"fill:" + scaleColor(student.math_score)} />
     {/each}
-  </ul>
+  </svg> -->
+
+<div
+  class="flex max-w-3xl flex-col items-center lg:flex-row"
+  bind:clientWidth={width}>
+  <div class="relative">
+    {#if students && width}
+      <svg {width} {height}>
+        <g>
+          <Axis {width} {height} {margin} scale={xScale} position="bottom" />
+          <Axis {width} {height} {margin} scale={yScale} position="left" />
+          <Labels
+            labelforx={true}
+            {width}
+            {height}
+            {margin}
+            yoffset={-30}
+            xoffset={-170}
+            label={'Math Score'} />
+          <Labels
+            labelfory={true}
+            textanchor={'start'}
+            {width}
+            {height}
+            {margin}
+            yoffset={10}
+            xoffset={10}
+            label={'writing Score'} />
+          {#each students as d, i}
+          <circle
+            class={d.race_ethnicity.split(' ').join('')}
+            cx={xScale(+d.math_score)}
+            cy={yScale(+d.writing_score)}
+            r={radiusScale(+d.reading_score)}
+            fill={colors(d.race_ethnicity)}/>
+          {/each}
+        </g>
+        <!-- <g transform="translate({width - margin.right},300)">
+          <RadialLegend {width} {height} {margin} {radiusScale} />
+        </g>
+        <g transform="translate({width - margin.right},130)">
+          <CategoryLegend
+            legend_data={ethnicGroups}
+            legend_color_function={colors}
+            space={80} />
+        </g> -->
+      </svg>
+    {/if}
+  </div>
+</div>
