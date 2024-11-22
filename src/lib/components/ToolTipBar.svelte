@@ -7,17 +7,13 @@
   <div
     class="tooltip"
     style="position: absolute;
-  top: {yScale(data.writing_score) + 20}px;
-  left: {xScale(data.math_score) + 20}px"
+  top: {yScale(data.score) + 20}px;
+  left: {xScale(data.group) + 20}px"
   >
 
   <div class='Score'>
     <h2>Math Score: </h2>
-    <p2 class='ExamScore'> {data.math_score}% </p2>
-  </div>
-  <div class="Score">
-    <h2>Writing Score: </h2>
-    <p2 class='ExamScore'> {data.writing_score}% </p2>
+    <p2 class='ExamScore'> {data.score}% </p2>
   </div>
   
   </div>

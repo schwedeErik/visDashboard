@@ -4,6 +4,8 @@
     import { base } from '$app/paths';
     import { onMount } from 'svelte';
     import Scatterplot from '$lib/components/Scatterplot.svelte';
+    import Barplot from '$lib/components/Barplot.svelte';
+
     import { scaleLinear, scaleLog, scaleSqrt, scaleOrdinal } from 'd3-scale';
     import { csv } from 'd3-fetch';
     import { extent } from 'd3-array';
@@ -29,6 +31,10 @@
     });
   </script>
 
-  <Scatterplot data={students}/>
-  
+  <!-- <Scatterplot data={students}/> -->
+  {#if students} 
+  <Scatterplot data={students}/>  
+  <Barplot data={students}/>
+    
+  {/if}
   

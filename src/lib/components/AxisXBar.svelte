@@ -2,16 +2,16 @@
     export let height;
     export let xScale;
     export let margin;
-    export let xTicks = [0, 25, 50, 75, 100];
+    export let xTicks;
+    export let barWitdh;
   </script>
   
   <g>
     {#each xTicks as tick}
       <text
-        x={xScale(tick)}
+        x={xScale(tick) - barWitdh/2}
         y={height - margin.bottom}
-        dy="6"
-        dominant-baseline="hanging">{tick}%</text
+        dominant-baseline="hanging">{tick}</text
       >
     {/each}
   </g>

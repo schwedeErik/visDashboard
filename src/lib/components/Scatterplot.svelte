@@ -24,6 +24,7 @@
     $: console.log(hoverData);
   </script>
   
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     class="chart-container"
     bind:clientWidth={width}
@@ -61,7 +62,7 @@
   
   <style>
     circle {
-      transition: all 300ms ease;
+      transition: all 100ms ease;
       cursor: pointer;
     }
 
