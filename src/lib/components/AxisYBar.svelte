@@ -15,7 +15,7 @@
       <line
         x1={margin.right}
         y1={yScale(tick)}
-        x2={width}
+        x2={width - margin.right}
         y2={yScale(tick)}
         stroke={tick == min(yTicks) ? "black" : "#cecece"}
       />

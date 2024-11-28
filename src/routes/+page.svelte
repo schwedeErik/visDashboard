@@ -5,6 +5,7 @@
     import { onMount } from 'svelte';
     import Scatterplot from '$lib/components/Scatterplot.svelte';
     import Barplot from '$lib/components/Barplot.svelte';
+    import Heatmap from '$lib/components/Heatmap.svelte';
 
     import { scaleLinear, scaleLog, scaleSqrt, scaleOrdinal } from 'd3-scale';
     import { csv } from 'd3-fetch';
@@ -35,6 +36,7 @@
   {#if students} 
   <Scatterplot data={students}/>  
   <Barplot data={students}/>
+  <Heatmap/>
     
   {/if}
   
