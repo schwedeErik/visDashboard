@@ -1,13 +1,12 @@
 <script>
     import { onMount } from "svelte";
     import L from "leaflet";
+    import { base } from '$app/paths';
     let map;
 
+    const geoJsonUrl = base + '/data/russia.geojson'
     onMount(async () => {
-      map = L.map("map", { preferCanvas: true }).setView(
-        [50.8476, 4.3572],
-        2,
-      );
+      map = L.map("map", { preferCanvas: true }).setView([37.8, -96], 4);
       L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
         {
@@ -16,6 +15,10 @@
           maxZoom: 18,
         },
       ).addTo(map);
+
+      const response = await fetch(geoJsonUrl);
+      const geoJsonData = await response.json();
+      L.geoJson(geoJsonData).addTo(map);
     });
 </script>
 <svelte:head>
