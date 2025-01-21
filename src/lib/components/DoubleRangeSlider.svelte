@@ -148,7 +148,6 @@
 	</div>
 </div>
 
-<p>Selected Range: {toValue(start)} - {toValue(end)}</p>
 <style>
 	.double-range-container {
 		width: 100%;
