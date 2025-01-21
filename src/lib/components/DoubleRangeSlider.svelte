@@ -1,11 +1,13 @@
 <script>
 	import { clamp } from 'yootils';
 
-	export let start = 0; // Percentage (0-1)
-	export let end = 1;   // Percentage (0-1)
-	export let minValue = 2008; // [NEW] Minimum slider value
-	export let maxValue = 2023; // [NEW] Maximum slider value
-	export let step = 1;        // [NEW] Step size in the mapped range (e.g., 1 year)
+	export let start = 0; 
+	export let end = 1;   
+	export let minValue = 2008; 
+	export let maxValue = 2023;
+    export let minSelectedValue;
+    export let maxSelectedValue; 
+	export let step = 1;     
 
 	let leftHandle;
 	let body;
@@ -75,9 +77,13 @@
 			if (which === 'start') {
 				start = p;
 				end = Math.max(end, p);
+                minSelectedValue = toValue(start);
+                maxSelectedValue = toValue(end);
 			} else {
 				start = Math.min(p, start);
 				end = p;
+                minSelectedValue = toValue(start);
+                maxSelectedValue = toValue(end);
 			}
 		};
 	}
@@ -93,6 +99,8 @@
 		pxEnd = quantize(pxEnd / parentWidth, step, minValue, maxValue);   // [NEW] Quantize end
 		start = pxStart;
 		end = pxEnd;
+        minSelectedValue = toValue(start)
+        maxSelectedValue = toValue(end)
 	}
 
 	// [NEW] Convert slider percentage (0-1) to actual value
