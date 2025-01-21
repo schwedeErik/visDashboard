@@ -25,6 +25,7 @@
 		"d3-scale": "^4.0.2",
 		"d3.js": "^0.0.2-security",
 		"leaflet": "^1.9.4",
-		"papaparse": "^5.4.1"
+		"papaparse": "^5.4.1",
+		"yootils": "^0.3.1"
 	}
 }

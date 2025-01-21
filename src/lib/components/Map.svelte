@@ -4,6 +4,7 @@
     import { scaleLinear, scaleLog, scalePow } from "d3-scale";
     import L from "leaflet";
     import { base } from '$app/paths';
+    import DoubleRangeSlider from "./DoubleRangeSlider.svelte";
     let map;
     let crimeData;
     let geoJsonData;
@@ -25,7 +26,6 @@
 
       const response = await fetch(geoJsonUrl);
       geoJsonData = await response.json();
-      //L.geoJson(geoJsonData).addTo(map);
   
   let minCrime = 100000000;
   let maxCrime = 0;
@@ -44,9 +44,9 @@
     return totalCrimes;
   }
 
-    function style(feature) {
+    function style(feature, startingYear, endingYear) {
     return {
-        fillColor: colorScale(getCrimeStat("2008",feature.properties.name_latin)),
+        fillColor: colorScale(getCrimeStat(startingYear,feature.properties.name_latin)),
         weight: 2,
         opacity: 1,
         color: 'white',
@@ -86,8 +86,11 @@
     });
 }
 
+let startingYear = "2020"
+let endingYear = "2008"
+
 geoJson = L.geoJson(geoJsonData, {
-  style: style,
+  style: feature => style(feature, startingYear, endingYear),
   onEachFeature: onEachFeature
 }).addTo(map);
 
@@ -130,6 +133,7 @@ console.log(minCrime);
     </script>
   </svelte:head>
 <div id="map"></div>
+<DoubleRangeSlider/>
 
 <style>
   #map {
