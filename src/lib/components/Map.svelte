@@ -149,7 +149,9 @@
     </script>
   </svelte:head>
   <div class="map-container">
-    <div id="map"></div>
+    <div class="main-map">
+      <div  id="map"></div>
+    </div>
     <DoubleRangeSlider bind:minSelectedValue bind:maxSelectedValue/>
     <div class="labels">
       <div class="label">{minSelectedValue}</div>
@@ -166,7 +168,12 @@
     height: 500px;
   }
 
+  .main-map{
+    outline: 2px solid;
+  }
+
   .map-container{
+    /* outline-style: dashed; */
     position: relative;
     margin: auto;
     width: 80vw;
