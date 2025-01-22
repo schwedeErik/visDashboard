@@ -63,6 +63,7 @@
                 data: sortedData.map(item => item.value),
                 fill: false,
                 borderColor: colorScale(crimeType), // Adjust color as needed
+                backgroundColor: colorScale(crimeType),
                 tension: 0.1
             };
 
