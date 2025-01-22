@@ -5,4 +5,3 @@
 </script>
 
 <Map></Map>
-<LineChart></LineChart>

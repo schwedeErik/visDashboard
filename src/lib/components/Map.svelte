@@ -188,15 +188,28 @@
     >
     </script>
   </svelte:head>
-<div id="map"></div>
-<DoubleRangeSlider bind:minSelectedValue bind:maxSelectedValue/>
-<div class="labels">
-  <div class="label">{minSelectedValue}</div>
-  <div class="label">{maxSelectedValue}</div>
-</div>
+  <div class="map-container">
+    <div id="map"></div>
+    <DoubleRangeSlider bind:minSelectedValue bind:maxSelectedValue/>
+    <div class="labels">
+      <div class="label">{minSelectedValue}</div>
+      <div class="label">{maxSelectedValue}</div>
+    </div>
+  </div>
+
+
+{#if crimeData}
+<LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:endYear = {maxSelectedValue} ></LineChart>
+{/if}
 <style>
   #map {
-      height: 480px;
+      height: 500px;
+  }
+
+  .map-container{
+    position: relative;
+    margin: auto;
+    width: 80vw;
   }
 
   .label:first-child {
