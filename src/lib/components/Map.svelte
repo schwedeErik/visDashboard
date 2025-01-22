@@ -12,38 +12,7 @@
     let geoJson;
 
     const geoJsonUrl = base + '/data/russia.geojson'
-    let minCrime = Infinity;
-    let maxCrime = -Infinity;
     let colorScale = scaleLinear().domain([0,1500]).range(['white','red']);
-    
-//     function getCrimeStatsForAllRegions(startYear, endYear) {
-//       let totalCrimesByRegion = {}; // Object to store total crimes by region
-
-//       for (let year = startYear; year <= endYear; year++) {
-//           // Iterate over each year in the range
-//           crimeData.forEach(record => {
-//               const region = record["region"];
-//               if (region === "Russian Federation") return; // Skip "Russian Federation"
-
-//               const value = parseFloat(record["number_of_crimes_per_onehundretthousend"]);
-//               if (!isNaN(value) && parseInt(record["year"]) == year) {
-//                   totalCrimesByRegion[region] = (totalCrimesByRegion[region] || 0) + value;
-//               }
-//           });
-//       }
-//       minCrime = Infinity;
-//       maxCrime = -Infinity;
-    
-//       // Iterate over total crimes by region and update min/max crimes
-//       for (const region in totalCrimesByRegion) {
-//           const totalCrimes = totalCrimesByRegion[region];
-//           if (totalCrimes < minCrime) minCrime = totalCrimes;
-//           if (totalCrimes > maxCrime) maxCrime = totalCrimes;
-//       }
-
-//       return;
-// }
-
     
     function getCrimeStat(startYear, endYear, region) {
     let totalCrimes = 0; // Initialize total crimes
@@ -74,7 +43,6 @@
     
     onMount(async () => {
       crimeData = await csv(base + '/data/russCrimes.csv');
-      //getCrimeStatsForAllRegions(2008,2023);
       map = L.map("map", { preferCanvas: true }).setView([65,100], 2.8);
       L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
@@ -108,13 +76,13 @@
       }
 
       function resetHighlight(e) {
-        let layer = e.target   //geoJson.resetStyle(e.target);
+        let layer = e.target 
         layer.setStyle({
         weight: 2,
         color: 'white',
         dashArray: '3',
         fillOpacity: 0.7,
-        fillColor: colorScale(getCrimeStat(minSelectedValue, maxSelectedValue, layer.feature.properties.name_latin)) // Ensure correct fillColor
+        fillColor: colorScale(getCrimeStat(minSelectedValue, maxSelectedValue, layer.feature.properties.name_latin))
     });
         info.update();
       }
@@ -146,7 +114,7 @@
 
 
     info.onAdd = function (map) {
-      this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+      this._div = L.DomUtil.create('div', 'info');
       this.update();
       return this._div;
     }
@@ -161,15 +129,8 @@
   let previousMax = 0;
 
   $: if(minSelectedValue || maxSelectedValue){
-      let startingYear = minSelectedValue.toString()
-      let endingYear = maxSelectedValue.toString()
       if(geoJson)
          geoJson.setStyle(feature => style(feature, minSelectedValue, maxSelectedValue))
-      // if(crimeData){
-      //   console.log(getCrimeStatsForAllRegions(startingYear, endingYear))
-      //   colorScale = scaleLinear().domain([minCrime,maxCrime]).range(['white','red']);
-      // }
-        
       
   } 
 
