@@ -14,39 +14,40 @@
     const geoJsonUrl = base + '/data/russia.geojson'
     let minCrime = Infinity;
     let maxCrime = -Infinity;
-    let colorScale = scaleLinear().domain([0,2500]).range(['white','red']);
+    let colorScale = scaleLinear().domain([0,1500]).range(['white','red']);
     
-    function getCrimeStatsForAllRegions(startYear, endYear) {
-      let totalCrimesByRegion = {}; // Object to store total crimes by region
+//     function getCrimeStatsForAllRegions(startYear, endYear) {
+//       let totalCrimesByRegion = {}; // Object to store total crimes by region
 
-      for (let year = startYear; year <= endYear; year++) {
-          // Iterate over each year in the range
-          crimeData.forEach(record => {
-              const region = record["region"];
-              if (region === "Russian Federation") return; // Skip "Russian Federation"
+//       for (let year = startYear; year <= endYear; year++) {
+//           // Iterate over each year in the range
+//           crimeData.forEach(record => {
+//               const region = record["region"];
+//               if (region === "Russian Federation") return; // Skip "Russian Federation"
 
-              const value = parseFloat(record["number_of_crimes_per_onehundretthousend"]);
-              if (!isNaN(value) && parseInt(record["year"]) == year) {
-                  totalCrimesByRegion[region] = (totalCrimesByRegion[region] || 0) + value;
-              }
-          });
-      }
-      minCrime = Infinity;
-      maxCrime = -Infinity;
+//               const value = parseFloat(record["number_of_crimes_per_onehundretthousend"]);
+//               if (!isNaN(value) && parseInt(record["year"]) == year) {
+//                   totalCrimesByRegion[region] = (totalCrimesByRegion[region] || 0) + value;
+//               }
+//           });
+//       }
+//       minCrime = Infinity;
+//       maxCrime = -Infinity;
     
-      // Iterate over total crimes by region and update min/max crimes
-      for (const region in totalCrimesByRegion) {
-          const totalCrimes = totalCrimesByRegion[region];
-          if (totalCrimes < minCrime) minCrime = totalCrimes;
-          if (totalCrimes > maxCrime) maxCrime = totalCrimes;
-      }
+//       // Iterate over total crimes by region and update min/max crimes
+//       for (const region in totalCrimesByRegion) {
+//           const totalCrimes = totalCrimesByRegion[region];
+//           if (totalCrimes < minCrime) minCrime = totalCrimes;
+//           if (totalCrimes > maxCrime) maxCrime = totalCrimes;
+//       }
 
-      return;
-}
+//       return;
+// }
 
     
     function getCrimeStat(startYear, endYear, region) {
     let totalCrimes = 0; // Initialize total crimes
+    let yearCount = endYear - startYear + 1;
     for (let year = startYear; year <= endYear; year++) {
         // Filter data for the given region and year
         let relevantData = crimeData.filter(cD => cD["region"] === region && parseInt(cD["year"]) == year);
@@ -55,7 +56,8 @@
             return sum + (isNaN(value) ? 0 : value);
         }, 0);
     }
-    return totalCrimes;
+    
+    return yearCount > 0 ? totalCrimes / yearCount : 0;
 }
 
     
@@ -72,7 +74,7 @@
     
     onMount(async () => {
       crimeData = await csv(base + '/data/russCrimes.csv');
-      getCrimeStatsForAllRegions(2008,2023);
+      //getCrimeStatsForAllRegions(2008,2023);
       map = L.map("map", { preferCanvas: true }).setView([65,100], 2.8);
       L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
@@ -159,19 +161,16 @@
   let previousMax = 0;
 
   $: if(minSelectedValue || maxSelectedValue){
-    if(!(previousMin == minSelectedValue && previousMax == maxSelectedValue)){
       let startingYear = minSelectedValue.toString()
       let endingYear = maxSelectedValue.toString()
-      console.log(startingYear)
-      console.log(endingYear)
-      if(crimeData){
-        console.log(getCrimeStatsForAllRegions(startingYear, endingYear))
-        colorScale = scaleLinear().domain([minCrime,maxCrime]).range(['white','red']);
-      }
-        
       if(geoJson)
-        geoJson.setStyle(feature => style(feature, minSelectedValue, maxSelectedValue))
-      }
+         geoJson.setStyle(feature => style(feature, minSelectedValue, maxSelectedValue))
+      // if(crimeData){
+      //   console.log(getCrimeStatsForAllRegions(startingYear, endingYear))
+      //   colorScale = scaleLinear().domain([minCrime,maxCrime]).range(['white','red']);
+      // }
+        
+      
   } 
 
 </script>
@@ -203,7 +202,7 @@
 {/if}
 <style>
   #map {
-      height: 500px;
+    height: 500px;
   }
 
   .map-container{
