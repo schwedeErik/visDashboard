@@ -152,11 +152,12 @@
     >
     </script>
   </svelte:head>
-  <Slider></Slider>
-  <GradientLedgend width={400} height={30} domain={[1500, 0]} />
   <div class="map-container">
     <div class="main-map">
       <div  id="map"></div>
+      <div class="legend-container">
+        <GradientLedgend width={400} height={30} domain={[1500, 0]} />      
+      </div>
     </div>
   </div>
 
@@ -172,6 +173,17 @@
 
   .main-map{
     outline: 2px solid;
+  }
+
+  .legend-container{
+    position: absolute;
+    bottom: 10px; 
+    left: 10px;   
+    z-index: 1000; 
+    background: rgba(255, 255, 255, 0.5); 
+    padding: 5px; 
+    border-radius: 4px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
   }
 
   .map-container{
