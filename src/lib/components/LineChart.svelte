@@ -5,20 +5,16 @@
 
     export let data;
     export let startYear = 2008;
-    export let endYear = 2023;
 
 	let ctx;
 	let chartCanvas;
     let chart;
 
-    let yearSet = new Set();
-
 	function filterData(d){
         if (!d) return [];
         const filteredData = d.filter(row => {
             const year = +row.year;
-            if (row.region === 'Russian Federation' && year >= startYear && year <= endYear) {
-                yearSet.add(year); // Add the year to the Set
+            if (row.region === 'Russian Federation') {
                 return true;
             }
             return false;
@@ -46,7 +42,6 @@
     
     
     function generateChartData(){
-        yearSet = new Set();
         const filteredData = filterData(data);
         const groupedData = groupData(filteredData)
 
@@ -69,7 +64,7 @@
 
         });
 
-        const yearsList = Array.from(yearSet).sort((a,b)=> a -b);
+        const yearsList = [2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023]
 
         const chartData = {
             labels: yearsList,
@@ -78,34 +73,92 @@
         return chartData
     }
     
-    
-    onMount(() => {
+    // Plugin to draw a vertical line
+    const verticalLinePlugin = {
+    id: 'verticalLinePlugin',
+    beforeDraw: (chart) => {
+        const { ctx, chartArea, scales } = chart;
+        console.log(scales["x-axis-0"].getPixelForValue(startYear))
 
+        const xCoord = scales["x-axis-0"].getPixelForValue(startYear);
+        const { top, bottom } = chartArea;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(xCoord, top);
+        ctx.lineTo(xCoord, bottom);
+        ctx.lineWidth = 5; // Line thickness
+        ctx.strokeStyle = 'red'; // Line color
+        ctx.stroke();
+        ctx.restore();
+    },
+};
+
+
+    onMount(() => {
+        let isDragging = true;
         var options = {
             maintainAspectRatio: false,
-            };
+            responsive: true,
+            scales: {
+                x: {
+                    beginAtZero: false,
+                    type: 'linear', // Use 'linear' for numerical data or 'category' for labels
+                },
+                y: {
+                    beginAtZero: true,
+                    type: 'linear'
+                },
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                },
+            },
+        };
 
         ctx = chartCanvas.getContext('2d');
 		chart = new Chart(ctx, {
 		    type: 'line',
 		    data: generateChartData(),
-            options: options
+            options: options,
+            plugins: [verticalLinePlugin],
 		});
 
 
-	});
+        chartCanvas.addEventListener('mousedown', (event) => {
+    const rect = chartCanvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
 
-    $: if(startYear || endYear){
-        console.log(startYear)
-        
-        
-        if(chart){
-            chart.data = generateChartData()
-            chart.update()
-            
-        }
-            
+    // Calculate the current line's pixel position
+    const xCoord = chart.scales["x-axis-0"].getPixelForValue(startYear);
+
+    // Check if the click is close to the line
+    if (Math.abs(mouseX - xCoord) < 5) {
+        isDragging = true;
     }
+});
+
+chartCanvas.addEventListener('mousemove', (event) => {
+    if (!isDragging) return;
+
+    const rect = chartCanvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+
+    // Convert pixel position to x-axis value
+    const newValue = chart.scales["x-axis-0"].getValueForPixel(mouseX);
+
+    // Update the line's position and redraw
+    startYear = newValue + 2008;
+    chart.update();
+});
+
+chartCanvas.addEventListener('mouseup', () => {
+    isDragging = false;
+});
+
+
+	});
 
 
     

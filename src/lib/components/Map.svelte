@@ -1,38 +1,41 @@
 <script>
     import { onMount } from "svelte";
+    import Slider from "svelte-slider"
     import { csv } from "d3-fetch";
-    import { scaleLinear, scaleLog, scalePow } from "d3-scale";
+    import { scaleLinear, scaleSequential} from "d3-scale";
+    import { interpolateRdYlBu } from 'd3-scale-chromatic';
     import L from "leaflet";
     import { base } from '$app/paths';
     import DoubleRangeSlider from "./DoubleRangeSlider.svelte";
     import LineChart from "./LineChart.svelte";
+    import GradientLedgend from "./GradientLedgend.svelte";
     let map;
     let crimeData;
     let geoJsonData;
     let geoJson;
 
     const geoJsonUrl = base + '/data/russia.geojson'
-    let colorScale = scaleLinear().domain([0,1500]).range(['white','red']);
-    
-    function getCrimeStat(startYear, endYear, region) {
-    let totalCrimes = 0; // Initialize total crimes
-    let yearCount = endYear - startYear + 1;
-    for (let year = startYear; year <= endYear; year++) {
-        // Filter data for the given region and year
-        let relevantData = crimeData.filter(cD => cD["region"] === region && parseInt(cD["year"]) == year);
-        totalCrimes += relevantData.reduce((sum, row) => {
-            const value = parseFloat(row["number_of_crimes_per_onehundretthousend"]);
-            return sum + (isNaN(value) ? 0 : value);
-        }, 0);
-    }
-    
-    return yearCount > 0 ? totalCrimes / yearCount : 0;
+    //let colorScale = scaleLinear().domain([0,1500]).range(['white','red']);
+    let colorScale = scaleSequential()
+  .interpolator(interpolateRdYlBu) 
+  .domain([1500, 0]);
+
+    function getCrimeStat(year, region) {
+      let totalCrimes = 0; // Initialize total crimes
+        
+      // Filter data for the given region and year
+      let relevantData = crimeData.filter(cD => cD["region"] === region && parseInt(cD["year"]) == year);
+          totalCrimes += relevantData.reduce((sum, row) => {
+              const value = parseFloat(row["number_of_crimes_per_onehundretthousend"]);
+              return sum + (isNaN(value) ? 0 : value);
+          }, 0);
+      return totalCrimes;
 }
 
     
-    function style(feature, startingYear, endingYear) {
+    function style(feature, year) {
       return {
-          fillColor: colorScale(getCrimeStat(startingYear, endingYear, feature.properties.name_latin)),
+          fillColor: colorScale(getCrimeStat(year, feature.properties.name_latin)),
           weight: 2,
           opacity: 1,
           color: 'white',
@@ -82,7 +85,7 @@
         color: 'white',
         dashArray: '3',
         fillOpacity: 0.7,
-        fillColor: colorScale(getCrimeStat(minSelectedValue, maxSelectedValue, layer.feature.properties.name_latin))
+        fillColor: colorScale(getCrimeStat(minSelectedValue, layer.feature.properties.name_latin))
     });
         info.update();
       }
@@ -100,7 +103,7 @@
       }
 
       geoJson = L.geoJson(geoJsonData, {
-        style: feature => style(feature, startingYear, endingYear),
+        style: feature => style(feature, startingYear),
         onEachFeature: onEachFeature
       }).addTo(map);
 
@@ -130,7 +133,7 @@
 
   $: if(minSelectedValue || maxSelectedValue){
       if(geoJson)
-         geoJson.setStyle(feature => style(feature, minSelectedValue, maxSelectedValue))
+         geoJson.setStyle(feature => style(feature, minSelectedValue))
       
   } 
 
@@ -148,20 +151,17 @@
     >
     </script>
   </svelte:head>
+  <Slider></Slider>
+  <GradientLedgend width={400} height={30} domain={[1500, 0]} />
   <div class="map-container">
     <div class="main-map">
       <div  id="map"></div>
-    </div>
-    <DoubleRangeSlider bind:minSelectedValue bind:maxSelectedValue/>
-    <div class="labels">
-      <div class="label">{minSelectedValue}</div>
-      <div class="label">{maxSelectedValue}</div>
     </div>
   </div>
 
 
 {#if crimeData}
-<LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:endYear = {maxSelectedValue} ></LineChart>
+<LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue}></LineChart>
 {/if}
 <style>
   #map {
