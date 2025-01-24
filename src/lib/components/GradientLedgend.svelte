@@ -5,6 +5,7 @@
   export let width = 300; // Width of the legend
   export let height = 20; // Height of the gradient bar
   export let domain = [1500, 0]; // Domain of the color scale
+  export let description = "Number of crimes per 100,000 people"; // Description of the values
 
   // Padding for the legend
   const padding = 20; // Space on the left and right for labels
@@ -24,11 +25,15 @@
   const tickScale = d3.scaleLinear().domain(domain).range([padding, width - padding]);
 </script>
 
+<svelte:head>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</svelte:head>
+
 <svg
   class="legend"
   width="{width + 2 * padding}"
-  height="{height + 40}" 
-  style="display: block; margin: 20px;"
+  height="{height + 60}" 
+  style="font-family: 'Roboto', sans-serif; display: block; margin: 20px;"
 >
   <!-- Gradient Definition -->
   <defs>
@@ -42,17 +47,29 @@
     </linearGradient>
   </defs>
 
+  <!-- Description Text -->
+  <text
+    x="{(width + 2 * padding) / 2}"
+    y="10"
+    text-anchor="middle"
+    font-size="14"
+    fill="#000"
+    
+  >
+    {description}
+  </text>
+
   <!-- Gradient Rectangle -->
   <rect
     x="{padding}"
-    y="0"
+    y="20"
     width="{width - 2 * padding}"
     height="{height}"
     fill="url(#legend-gradient)"
   />
 
   <!-- Axis -->
-  <g transform="translate(0, {height + 10})">
+  <g transform="translate(0, {height + 30})">
     <!-- Axis Line -->
     <line x1="{padding}" y1="0" x2="{width - padding}" y2="0" stroke="#000" />
 
