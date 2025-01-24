@@ -130,7 +130,8 @@
   let maxSelectedValue = 2023
   let previousMin = 0;
   let previousMax = 0;
-
+  let highCatagories = ["Theft", "Crimes in the Sphere of Economic Activity", "Robbery without violence", "Intentional Bodily Harm"];
+  let lowCatagories = ["Murder", "Rape", "Robbery with violence", "Extortion", "Hooliganism"]
   $: if(minSelectedValue || maxSelectedValue){
       if(geoJson)
          geoJson.setStyle(feature => style(feature, minSelectedValue))
@@ -161,7 +162,8 @@
 
 
 {#if crimeData}
-<LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue}></LineChart>
+<LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={highCatagories}>  </LineChart>
+<LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={lowCatagories}></LineChart>
 {/if}
 <style>
   #map {

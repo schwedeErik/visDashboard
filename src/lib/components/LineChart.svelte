@@ -5,6 +5,7 @@
 
     export let data;
     export let startYear = 2008;
+    export let categories;
 
 	let ctx;
 	let chartCanvas;
@@ -27,6 +28,9 @@
         const groupedData = {};
         d.forEach(row => {
         const crimeType = row.type_of_crime;
+
+        if(!categories.includes(crimeType))
+            return;
         const year = +row.year;
         const value = +row.number_of_crimes_per_onehundretthousend;
 
@@ -58,7 +62,9 @@
                 data: sortedData.map(item => item.value),
                 fill: false,
                 borderColor: colorScale(crimeType), // Adjust color as needed
+                borderWidth: 1.5,
                 backgroundColor: colorScale(crimeType),
+                pointRadius: 0,
                 tension: 0.1
             };
 
@@ -102,6 +108,9 @@
             responsive: true,
             scales: {
                 x: {
+                    gridLines: {
+                        display: false,
+                    },
                     beginAtZero: false,
                     type: 'linear', // Use 'linear' for numerical data or 'category' for labels
                 },
@@ -150,7 +159,7 @@ chartCanvas.addEventListener('mousemove', (event) => {
 
     // Update the line's position and redraw
     startYear = newValue + 2008;
-    chart.update();
+    //chart.update();
 });
 
 chartCanvas.addEventListener('mouseup', () => {
@@ -160,7 +169,10 @@ chartCanvas.addEventListener('mouseup', () => {
 
 	});
 
-
+$: if(chart && startYear){
+    chart.update()
+}
+    
     
 
 </script>
@@ -172,7 +184,7 @@ chartCanvas.addEventListener('mouseup', () => {
     .chart-container {
         position: relative;
         margin: auto;
-        height: 50vh;
+        height: 20vh;
         width: 80vw;
 }
 </style>
