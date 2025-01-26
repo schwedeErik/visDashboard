@@ -108,7 +108,7 @@
             responsive: true,
             scales: {
                 x: {
-                    gridLines: {
+                    d: {
                         display: false,
                     },
                     beginAtZero: false,
@@ -116,7 +116,8 @@
                 },
                 y: {
                     beginAtZero: true,
-                    type: 'linear'
+                    type: 'linear',
+                    
                 },
             },
             plugins: {
@@ -124,6 +125,12 @@
                     display: true,
                 },
             },
+            layout: {
+                padding:{
+                    left:0,
+                    right:0,
+                }
+            }
         };
 
         ctx = chartCanvas.getContext('2d');
@@ -133,6 +140,9 @@
             options: options,
             plugins: [verticalLinePlugin],
 		});
+
+        chart.options.scales.y.afterFit = function(axis) {axis.width = 150;};
+        chart.update();
 
 
         chartCanvas.addEventListener('mousedown', (event) => {
@@ -182,9 +192,8 @@ $: if(chart && startYear){
     
 <style>
     .chart-container {
-        position: relative;
-        margin: auto;
-        height: 20vh;
-        width: 80vw;
-}
+        flex: 1;
+        /* border: 5px solid black; */
+        overflow: hidden;
+    }
 </style>

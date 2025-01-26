@@ -1,13 +1,15 @@
 <script>
     import Map from '$lib/components/Map.svelte';
-    import SliderTest from '$lib/components/SliderTest.svelte';
-    import LineChart from '$lib/components/LineChart.svelte';
+    import MapTest from '$lib/components/MapTest.svelte';
 </script>
-<dic class="main-header">
-    <h1 >Crime Dashboard</h1>
-</dic>
+<div>
+    <!-- <dic class="main-header">
+        <h1 >Crime Dashboard</h1>
+    </dic> -->
+    <Map/>
+</div>
 
-<Map></Map>
+
 <style>
     .main-header{
         display: flex;
@@ -16,5 +18,11 @@
 
     h1{
         font-family: 'Courier New', Courier, monospace;
+    }
+
+    body{
+        display: flex;
+        flex-direction: column;
+        height: 100vh
     }
 </style>

@@ -9,6 +9,8 @@
     import DoubleRangeSlider from "./DoubleRangeSlider.svelte";
     import LineChart from "./LineChart.svelte";
     import GradientLedgend from "./GradientLedgend.svelte";
+    import BarChart from "./BarChart.svelte";
+    import 'leaflet/dist/leaflet.css';
     let map;
     let crimeData;
     let geoJsonData;
@@ -130,8 +132,8 @@
   let maxSelectedValue = 2023
   let previousMin = 0;
   let previousMax = 0;
-  let highCatagories = ["Theft", "Crimes in the Sphere of Economic Activity", "Robbery without violence", "Intentional Bodily Harm"];
-  let lowCatagories = ["Murder", "Rape", "Robbery with violence", "Extortion", "Hooliganism"]
+  let highCatagories = ["Theft", "Crimes in the Sphere of Economic Activity", "Robbery without violence"];
+  let lowCatagories = ["Murder", "Rape", "Robbery with violence", "Extortion", "Hooliganism", "Intentional Bodily Harm"]
   $: if(minSelectedValue || maxSelectedValue){
       if(geoJson)
          geoJson.setStyle(feature => style(feature, minSelectedValue))
@@ -139,7 +141,7 @@
   } 
 
 </script>
-<svelte:head>
+<!-- <svelte:head>
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
@@ -151,25 +153,62 @@
       crossorigin=""
     >
     </script>
-  </svelte:head>
-  <div class="map-container">
-    <div class="main-map">
-      <div  id="map"></div>
-      <div class="legend-container">
-        <GradientLedgend width={400} height={30} domain={[1500, 0]} />      
+  </svelte:head> -->
+  <div class="main-div">
+    <div class="map-container">
+      <div class="main-map">
+        <div  id="map"></div>
+        <div class="legend-container">
+          <GradientLedgend width={400} height={30} domain={[1500, 0]} />      
+        </div>
       </div>
     </div>
+  
+  
+    {#if crimeData}
+    <div class="chart-container">
+      <div class="chart-lineContainer">
+        <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={highCatagories}> </LineChart>
+        <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={lowCatagories}></LineChart>
+      </div>
+        
+      <BarChart></BarChart>
+    </div>
+    
+    {/if}
   </div>
+  
 
-
-{#if crimeData}
-<LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={highCatagories}>  </LineChart>
-<LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={lowCatagories}></LineChart>
-{/if}
 <style>
-  #map {
-    height: 500px;
+
+  .main-div{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
+  .chart-container{
+    display: flex;
+    flex: 1;
+    flex-direction: row; /* Align charts horizontally */
+    justify-content: center; /* Center the charts horizontally in the container */
+    height: 40vh;  
+    width: 80%; /* Full width of parent container */
+    gap: 1rem; /* Space between charts */
+    margin: 0 auto; /* Center the container itself */
+  }
+  .chart-lineContainer{
+    display: flex;
+    overflow: hidden;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+
+  #map{
+        height: 50vh;
+    }
 
   .main-map{
     outline: 2px solid;
