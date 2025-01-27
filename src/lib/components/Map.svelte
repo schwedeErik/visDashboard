@@ -172,7 +172,7 @@
         <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={lowCatagories}></LineChart>
       </div>
         
-      <BarChart></BarChart>
+      <BarChart bind:data = {crimeData} region = {'Russian Federation'}></BarChart>
     </div>
     
     {/if}
@@ -189,7 +189,7 @@
   }
   .chart-container{
     display: flex;
-    flex: 1;
+
     flex-direction: row; /* Align charts horizontally */
     justify-content: center; /* Center the charts horizontally in the container */
     height: 40vh;  
@@ -199,7 +199,6 @@
   }
   .chart-lineContainer{
     display: flex;
-    overflow: hidden;
     flex: 1;
     flex-direction: column;
     justify-content: center;
