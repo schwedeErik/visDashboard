@@ -1,6 +1,5 @@
 <script>
     import { onMount } from "svelte";
-    import Slider from "svelte-slider"
     import { csv } from "d3-fetch";
     import { scaleLinear, scaleSequential} from "d3-scale";
     import { interpolateRdYlBu } from 'd3-scale-chromatic';

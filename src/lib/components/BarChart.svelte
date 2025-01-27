@@ -14,6 +14,19 @@
         return d.filter(cD => cD["region"] === region && parseInt(cD["year"]) === year);
     }
 
+    function mapValue(d,value,type){
+        const crimeTypes = Object.keys(d)
+        const outputData = []
+        crimeTypes.forEach(cT => {
+            if(cT == type)
+                outputData.push(value)
+            else
+                outputData.push(undefined)
+        })
+
+        return outputData;
+    }
+
     function sortDataByMostCommonCrime(d){
         d.sort((a, b) => {
             let crimesA = parseFloat(a["number_of_crimes_per_onehundretthousend"]);
@@ -39,26 +52,25 @@
         return groupedData;
     }
 
+    
+    
+    
+    
     function generateChartData(){
-        console.log(data)
         const filteredData = filterData(data,2008,region);
         const sortedData = sortDataByMostCommonCrime(filteredData)
         const groupedData = groupData(sortedData);
         
-        console.log(filteredData)
-        console.log(sortedData)
 
         const crimeTypes = Object.keys(groupedData);
         const colorScale = d3.scaleOrdinal(d3.schemeCategory10).domain(crimeTypes);
         
         // Create the data objects
         const crimeDataObjects = Object.keys(groupedData).map(crimeType => {
-            // Sort the data by year
-            const sortedData = groupedData[crimeType].sort((a, b) => a.year - b.year);
 
             return {
                 label: crimeType,
-                data: sortedData.map(item => item.value),
+                data: mapValue(groupedData, groupedData[crimeType].at(0).value,crimeType),
                 fill: false,
                 borderColor: colorScale(crimeType), // Adjust color as needed
                 borderWidth: 1.5,
@@ -68,12 +80,24 @@
         });
 
         console.log(crimeTypes)
+        console.log(crimeDataObjects)
 
         const chartData = {
-            //labels: crimeTypes,
+            labels: crimeTypes,
             datasets: crimeDataObjects }
 
         return chartData
+    }
+
+    function genCData(){
+        const filteredData = filterData(data,2008,region);
+        const sortedData = sortDataByMostCommonCrime(filteredData);
+        console.log(sortedData)
+
+        const dataset = {
+
+        }
+
     }
 
     onMount(() => {
@@ -81,38 +105,14 @@
             maintainAspectRatio: false,
             responsive: true,
             scales: {
-                y: {
-                    beginAtZero: true,
-                },
+                xAxes:[
+                    {
+                        stacked: true,
+                    }
+                ],
             },
         };
 
-    const data = {
-        datasets: [{
-            label: 'My First Dataset',
-            data: [, 59, 80, 81, 56, 55, 40],
-            backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(255, 159, 64, 0.2)',
-            'rgba(255, 205, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(153, 102, 255, 0.2)',
-            'rgba(201, 203, 207, 0.2)'
-            ],
-            borderColor: [
-            'rgb(255, 99, 132)',
-            'rgb(255, 159, 64)',
-            'rgb(255, 205, 86)',
-            'rgb(75, 192, 192)',
-            'rgb(54, 162, 235)',
-            'rgb(153, 102, 255)',
-            'rgb(201, 203, 207)'
-            ],
-            borderWidth: 1
-        }]
-    };
-        
         ctx = chartCanvas.getContext('2d');
         const chartData = generateChartData();
         console.log(chartData)
@@ -124,6 +124,8 @@
 
         chart.options.scales.y.afterFit = function(axis) {axis.width = 150;};
         chart.update();
+
+        genCData();
     });
 
 </script>
