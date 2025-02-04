@@ -1,11 +1,10 @@
 <script>
     import { onMount } from "svelte";
     import { csv } from "d3-fetch";
-    import { scaleLinear, scaleSequential} from "d3-scale";
+    import { scaleSequential} from "d3-scale";
     import { interpolateRdYlBu } from 'd3-scale-chromatic';
     import L from "leaflet";
     import { base } from '$app/paths';
-    import DoubleRangeSlider from "./DoubleRangeSlider.svelte";
     import LineChart from "./LineChart.svelte";
     import GradientLedgend from "./GradientLedgend.svelte";
     import BarChart from "./BarChart.svelte";
@@ -14,12 +13,13 @@
     let crimeData;
     let geoJsonData;
     let geoJson;
+    $: selectedRegion = 'Russian Federation';
 
     const geoJsonUrl = base + '/data/russia.geojson'
     //let colorScale = scaleLinear().domain([0,1500]).range(['white','red']);
     let colorScale = scaleSequential()
-  .interpolator(interpolateRdYlBu) 
-  .domain([1500, 0]);
+      .interpolator(interpolateRdYlBu) 
+      .domain([1500, 0]);
 
     function getCrimeStat(year, region) {
       let totalCrimes = 0; // Initialize total crimes
@@ -77,6 +77,7 @@
 
         layer.bringToFront();
         info.update(layer.feature.properties);
+        selectedRegion = layer.feature.properties.name_latin;
       }
 
       function resetHighlight(e) {
@@ -87,7 +88,8 @@
         dashArray: '3',
         fillOpacity: 0.7,
         fillColor: colorScale(getCrimeStat(minSelectedValue, layer.feature.properties.name_latin))
-    });
+        });
+        selectedRegion = 'Russian Federation';
         info.update();
       }
 
@@ -129,8 +131,6 @@
     
   let minSelectedValue = 2008
   let maxSelectedValue = 2023
-  let previousMin = 0;
-  let previousMax = 0;
   let highCatagories = ["Theft", "Crimes in the Sphere of Economic Activity", "Robbery without violence"];
   let lowCatagories = ["Murder", "Rape", "Robbery with violence", "Extortion", "Hooliganism", "Intentional Bodily Harm"]
   $: if(minSelectedValue || maxSelectedValue){
@@ -139,20 +139,11 @@
       
   } 
 
+  $: if(selectedRegion){
+
+  }
+
 </script>
-<!-- <svelte:head>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-      crossorigin=""
-    />
-  
-    <script
-      src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-      crossorigin=""
-    >
-    </script>
-  </svelte:head> -->
   <div class="main-div">
     <div class="map-container">
       <div class="main-map">
@@ -171,7 +162,7 @@
         <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={lowCatagories}></LineChart>
       </div>
         
-      <BarChart bind:data = {crimeData} region = {'Russian Federation'}></BarChart>
+      <BarChart bind:data = {crimeData} region = {selectedRegion} bind:year = {minSelectedValue}></BarChart>
     </div>
     
     {/if}

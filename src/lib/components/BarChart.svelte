@@ -5,6 +5,7 @@
 
     export let data;
     export let region = 'Russian Federation';
+    export let year = 2008;
 
     let ctx;
 	let chartCanvas;
@@ -57,7 +58,7 @@
     
     
     function generateChartData(){
-        const filteredData = filterData(data,2008,region);
+        const filteredData = filterData(data,year,region);
         const sortedData = sortDataByMostCommonCrime(filteredData)
         const groupedData = groupData(sortedData);
         
@@ -98,6 +99,11 @@
 
         }
 
+    }
+
+    $: if(region && chart && year){
+        chart.data = generateChartData();
+        chart.update();
     }
 
     onMount(() => {
