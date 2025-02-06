@@ -209,8 +209,7 @@
         <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={highCatagories}> </LineChart>
         <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={lowCatagories}></LineChart>
       </div>
-        
-      <BarChart bind:data = {crimeData} region = {selectedRegion} bind:year = {minSelectedValue}></BarChart>
+        <BarChart bind:data = {crimeData} region = {selectedRegion} bind:year = {minSelectedValue}></BarChart>
     </div>
     
     {/if}
@@ -261,6 +260,7 @@ html, body, #app {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
   margin: 0 10px;
 }
 
