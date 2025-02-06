@@ -278,7 +278,7 @@
 
   <div class="main-div">
     <header class="dashboard-header">
-      <h1>Crimes in Russia (2008-2023)</h1>
+      <h1>Crime Statistics Russia (2008-2023)</h1>
     </header>
     <div class="main-content">
       <div class="map-container">
