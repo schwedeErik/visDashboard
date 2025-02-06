@@ -162,7 +162,7 @@
                 }
             },
             legend: {
-                onClick: (e) => e.preventDefault(), // Disable legend clicks
+                display: false,
             }
         };
 

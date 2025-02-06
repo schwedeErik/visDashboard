@@ -162,7 +162,7 @@
                 padding: 10,  // Spacing around title
             },
             legend: {
-                onClick: (e) => e.preventDefault(), // Disable legend clicks
+                display: false,
             }
         };
 

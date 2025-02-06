@@ -289,6 +289,36 @@
         </div>
       </div>
   
+
+      <div class="shared-legend">
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #2ECC71;"></span> Theft
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #1ABC9C;"></span> Economic Crime
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #9B59B6;"></span> Robbery (No Violence)
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #F1C40F;"></span> Murder
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #E67E22;"></span> Rape
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #27AE60;"></span> Robbery (With Violence)
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #8D6E63;"></span> Extortion
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #FF69B4;"></span> Hooliganism
+        </div>
+        <div class="legend-item">
+          <span class="legend-color" style="background-color: #A3CB38;"></span> Intentional Bodily Harm
+        </div>
+      </div>
   
     {#if crimeData}
     <div class="chart-container">
@@ -312,6 +342,34 @@ html, body, #app {
   padding: 0;
   font-family: 'Roboto', sans-serif;
   overflow: hidden; /* Prevent global scrolling */
+}
+
+.shared-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  padding: 10px;
+  margin-top: 10px;
+  background: rgba(255, 255, 255, 0.8); /* Optional: Light background */
+  border-radius: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Roboto', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  border-radius: 4px; /* Optional: Make it rounded */
 }
 
 .main-div {
