@@ -183,23 +183,24 @@
     <header class="dashboard-header">
       <h1>Crimes in Russia (2008-2023)</h1>
     </header>
-    <div class="map-container">
-      <div class="year-display leaflet-control">Crimes in {minSelectedValue}</div>
-      <button class="reset-button leaflet-control" on:click={resetView} aria-label="Reset View">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="23 4 23 10 17 10"></polyline>
-          <polyline points="1 20 1 14 7 14"></polyline>
-          <path d="M3.51 9a9 9 0 0 1 14.61-3L23 10"></path>
-          <path d="M20.49 15a9 9 0 0 1-14.61 3L1 14"></path>
-        </svg>
-      </button>
-      <div class="main-map">
-        <div  id="map"></div>
-        <div class="legend-container">
-          <GradientLedgend width={400} height={30} domain={[1500, 0]} />      
+    <div class="main-content">
+      <div class="map-container">
+        <div class="year-display leaflet-control">Crimes in {minSelectedValue}</div>
+        <button class="reset-button leaflet-control" on:click={resetView} aria-label="Reset View">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.61-3L23 10"></path>
+            <path d="M20.49 15a9 9 0 0 1-14.61 3L1 14"></path>
+          </svg>
+        </button>
+        <div class="main-map">
+          <div  id="map"></div>
+          <div class="legend-container">
+            <GradientLedgend width={400} height={30} domain={[1500, 0]} />      
+          </div>
         </div>
       </div>
-    </div>
   
   
     {#if crimeData}
@@ -213,6 +214,7 @@
     </div>
     
     {/if}
+  </div>
   </div>
   
 
@@ -232,12 +234,8 @@ html, body, #app {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 96vh; /* Slightly smaller than full height to add visual margin */
-  width: 96vw; /* Slightly smaller than full width for clean spacing */
-  margin: 2vh auto; /* Add consistent vertical and horizontal margins */
-  overflow: hidden; /* Prevent internal scrolling */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional: Add a clean shadow */
-  border-radius: 8px; /* Optional: Rounded corners for cleaner layout */
+  height: 98vh; /* Full height */
+  margin: 0;
 }
 
 .map-container {
@@ -305,6 +303,21 @@ html, body, #app {
   z-index: 1000;
 }
 
+.main-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 96%; /* Adjust height to fill the remaining space */
+  width: 96%; /* Slight margin for aesthetics */
+  margin: 0 auto;
+  border: 1px solid #ddd; /* Add the border here */
+  border-radius: 8px; /* Rounded corners for cleaner look */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow */
+  overflow: hidden;
+}
+* {
+  box-sizing: border-box;
+}
 .reset-button {
   position: absolute;
   top: 80px;
@@ -338,37 +351,15 @@ html, body, #app {
   padding: 10px 0;
   background-color: #fff;
   font-family: 'Roboto', sans-serif;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
   color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
 }
 
 .dashboard-header h1 {
-  font-family: 'Roboto', sans-serif;
-  font-weight: 500; /* Medium weight for minimalistic look */
-  font-size: 24px; /* Clean and readable size */
-  color: #333; /* Neutral dark gray text */
   margin: 0; /* Remove default margins */
-  text-transform: uppercase; /* Optional: Make text uppercase */
-  letter-spacing: 1px; /* Add slight spacing for readability */
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
-
-.map-header {
-  position: absolute;
-  top: 10px; /* Place the headline at the top of the map */
-  left: 50%;
-  transform: translateX(-50%); /* Center the headline horizontally */
-  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
-  padding: 5px 15px; /* Add padding for a clean look */
-  font-family: 'Roboto', sans-serif;
-  font-size: 18px; /* Clean font size */
-  font-weight: 500; /* Medium font weight */
-  color: #333; /* Neutral dark text color */
-  text-align: center;
-  z-index: 1000; /* Ensure it appears above the map */
-}
-
 
 </style>
