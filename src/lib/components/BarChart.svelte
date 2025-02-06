@@ -92,7 +92,7 @@
         const groupedData = groupData(sortedData);
         
 
-        const crimeTypes = Object.keys(groupedData);
+        const crimeTypes = Object.keys(groupedData).map(type => shortenCrimeType(type));
         
         // Create the data objects
         const crimeDataObjects = Object.keys(groupedData).map(crimeType => {
@@ -145,6 +145,14 @@
                     }
                 ],
             },
+            title: {
+                display: true,  // Enables the title
+                text: 'Crime Statistics Overview',  // Your chart title
+                fontSize: 16,  // Adjust size
+                fontColor: '#333',  // Title color
+                fontStyle: 'bold',
+                padding: 10,  // Spacing around title
+        }
         };
 
         ctx = chartCanvas.getContext('2d');
