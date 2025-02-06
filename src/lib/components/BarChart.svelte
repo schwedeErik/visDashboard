@@ -131,6 +131,14 @@
 
     $: if(region && chart && year){
         chart.data = generateChartData();
+        chart.options.title = {
+            display: true,  
+            text: `Crime in ${region} (${year})`, 
+            fontSize: 16,  
+            fontColor: '#333',  
+            fontStyle: 'bold',
+            padding: 10,  
+        };
         chart.update();
     }
 
@@ -147,12 +155,15 @@
             },
             title: {
                 display: true,  // Enables the title
-                text: 'Crime Statistics Overview',  // Your chart title
+                text: `Crimes in ${region} (${year})`,  // Your chart title
                 fontSize: 16,  // Adjust size
                 fontColor: '#333',  // Title color
                 fontStyle: 'bold',
                 padding: 10,  // Spacing around title
-        }
+            },
+            legend: {
+                onClick: (e) => e.preventDefault(), // Disable legend clicks
+            }
         };
 
         ctx = chartCanvas.getContext('2d');

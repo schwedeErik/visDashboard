@@ -160,6 +160,9 @@
                     left:0,
                     right:0,
                 }
+            },
+            legend: {
+                onClick: (e) => e.preventDefault(), // Disable legend clicks
             }
         };
 

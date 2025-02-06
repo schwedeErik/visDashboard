@@ -143,9 +143,30 @@
 
   }
 
+  function resetView() {
+    if (map) {
+        map.setView([65, 100], 2.8); // Reset to initial center and zoom
+    }
+}
+
 </script>
+
+<svelte:head>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</svelte:head>
+
+
   <div class="main-div">
     <div class="map-container">
+      <div class="selected-year-text">Crimes in {minSelectedValue}</div>
+      <button class="reset-button leaflet-control" on:click={resetView} aria-label="Reset View">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.61-3L23 10"></path>
+          <path d="M20.49 15a9 9 0 0 1-14.61 3L1 14"></path>
+        </svg>
+      </button>
       <div class="main-map">
         <div  id="map"></div>
         <div class="legend-container">
@@ -227,4 +248,47 @@
 	.label:last-child {
 		float: right;
 	}
+
+  .selected-year-text {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    color: white;
+    padding: 5px 10px;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: Roboto;
+    border-radius: 5px;
+    z-index: 1000;
+  }
+  .reset-button {
+  position: absolute;
+  top: 80px; /* Adjust to appear below zoom controls */
+  left: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 5px;
+  border-radius: 3px;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background 0.3s, box-shadow 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px; /* Square button */
+  height: 32px;
+}
+
+.reset-button:hover {
+  background-color: #f4f4f4;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.reset-button svg {
+  width: 20px;
+  height: 20px;
+  stroke: black;
+}
 </style>
