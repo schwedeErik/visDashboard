@@ -6,6 +6,7 @@
     export let data;
     export let startYear = 2008;
     export let categories;
+    export let region = 'Russian Federation';
 
 	let ctx;
 	let chartCanvas;
@@ -15,7 +16,7 @@
         if (!d) return [];
         const filteredData = d.filter(row => {
             const year = +row.year;
-            if (row.region === 'Russian Federation') {
+            if (row.region === region) {
                 return true;
             }
             return false;
@@ -213,6 +214,11 @@ chartCanvas.addEventListener('mouseup', () => {
 	});
 
 $: if(chart && startYear){
+    chart.update()
+}
+
+$: if(chart && region){
+    chart.data = generateChartData();
     chart.update()
 }
     

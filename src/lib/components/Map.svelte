@@ -162,7 +162,12 @@
       
 
       function zoomToFeature(e) {
-        //map.fitBounds(e.target.getBounds());
+
+        map.flyToBounds(e.target.getBounds(), {
+            padding: [20, 20],
+            duration: 0.5,
+            easeLinearity: 0.25,
+          });
         let clickedRegion = e.target.feature.properties.name_latin;
         console.log("Clicked" + clickedRegion)
         console.log("Selected" + selectedRegion)
@@ -176,6 +181,11 @@
 
         if(clickedRegion == selectedRegion && selectionIsFixed){
           selectionIsFixed = false;
+          map.flyToBounds(russiaBounds, {
+            padding: [20, 20],
+            duration: 0.5,
+            easeLinearity: 0.25,
+          });
           return;
         }
 
@@ -323,8 +333,8 @@
     {#if crimeData}
     <div class="chart-container">
       <div class="chart-lineContainer">
-        <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={highCatagories}> </LineChart>
-        <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={lowCatagories}></LineChart>
+        <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={highCatagories} region={selectedRegion}> </LineChart>
+        <LineChart bind:data = {crimeData}  bind:startYear = {minSelectedValue} bind:categories ={lowCatagories} region={selectedRegion}></LineChart>
       </div>
         <BarChart bind:data = {crimeData} region = {selectedRegion} bind:year = {minSelectedValue}></BarChart>
     </div>
