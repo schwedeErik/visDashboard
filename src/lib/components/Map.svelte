@@ -15,6 +15,10 @@
     let geoJson;
     $: selectedRegion = 'Russian Federation';
 
+    const russiaBounds = L.latLngBounds(
+    [41.1851, 19.6389], 
+    [82.0586, 180.0000]);
+
     const geoJsonUrl = base + '/data/russia.geojson'
     //let colorScale = scaleLinear().domain([0,1500]).range(['white','red']);
     let colorScale = scaleSequential()
@@ -47,7 +51,10 @@
     
     onMount(async () => {
       crimeData = await csv(base + '/data/russCrimes.csv');
-      map = L.map("map", { preferCanvas: true }).setView([65,100], 2.8);
+      map = L.map("map", { preferCanvas: true,
+                            zoomSnap: 0.1, // Allows fractional zoom levels
+                            zoomDelta: 0.1, // Allows zooming in 0.5 increments
+       });
       L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
         {
@@ -126,6 +133,18 @@
     }
 
     info.addTo(map)
+    
+    map.fitBounds(russiaBounds, {padding: [20,20]})
+    // Ensure the map resizes properly on load and when resizing the window
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100); // Delay slightly to ensure proper resizing
+
+    window.addEventListener('resize', () => {
+        map.invalidateSize(); // Recalculate map size on window resize
+        
+        map.fitBounds(russiaBounds, { padding: [20, 20] })
+    });
   });
 
     
@@ -145,7 +164,11 @@
 
   function resetView() {
     if (map) {
-        map.setView([65, 100], 2.8); // Reset to initial center and zoom
+        map.flyToBounds(russiaBounds, {
+            padding: [20, 20],
+            duration: 0.5,
+            easeLinearity: 0.25,
+        });
     }
 }
 
@@ -157,8 +180,11 @@
 
 
   <div class="main-div">
+    <header class="dashboard-header">
+      <h1>Crimes in Russia (2008-2023)</h1>
+    </header>
     <div class="map-container">
-      <div class="selected-year-text">Crimes in {minSelectedValue}</div>
+      <div class="year-display leaflet-control">Crimes in {minSelectedValue}</div>
       <button class="reset-button leaflet-control" on:click={resetView} aria-label="Reset View">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="23 4 23 10 17 10"></polyline>
@@ -192,80 +218,96 @@
 
 <style>
 
-  .main-div{
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  .chart-container{
-    display: flex;
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto', sans-serif;
+  overflow: hidden; /* Prevent global scrolling */
+}
 
-    flex-direction: row; /* Align charts horizontally */
-    justify-content: center; /* Center the charts horizontally in the container */
-    height: 40vh;  
-    width: 80%; /* Full width of parent container */
-    gap: 1rem; /* Space between charts */
-    margin: 0 auto; /* Center the container itself */
-  }
-  .chart-lineContainer{
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-  }
+.main-div {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 96vh; /* Slightly smaller than full height to add visual margin */
+  width: 96vw; /* Slightly smaller than full width for clean spacing */
+  margin: 2vh auto; /* Add consistent vertical and horizontal margins */
+  overflow: hidden; /* Prevent internal scrolling */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional: Add a clean shadow */
+  border-radius: 8px; /* Optional: Rounded corners for cleaner layout */
+}
 
+.map-container {
+  position: relative;
+  flex: 1; /* Map takes remaining height */
+  width: 100%; /* Full width within the parent */
+  margin: 0;
+  overflow: hidden; /* Prevent map scrolling issues */
+}
 
-  #map{
-        height: 50vh;
-    }
+.chart-container {
+  display: flex;
+  flex-direction: row; /* Align charts horizontally */
+  justify-content: center;
+  height: 55%; /* Adjust height for charts */
+  width: 100%; /* Full width within the parent */
+  gap: 1rem; /* Space between charts */
+  overflow: hidden; /* Avoid overflow */
+}
 
-  .main-map{
-    outline: 2px solid;
-  }
+.chart-lineContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 10px;
+}
 
-  .legend-container{
-    position: absolute;
-    bottom: 10px; 
-    left: 10px;   
-    z-index: 1000; 
-    background: rgba(255, 255, 255, 0.5); 
-    padding: 5px; 
-    border-radius: 4px; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); 
-  }
+#map {
+  height: 100%; /* Fill parent container */
+  width: 100%; /* Full width */
+}
 
-  .map-container{
-    /* outline-style: dashed; */
-    position: relative;
-    margin: auto;
-    width: 80vw;
-  }
+.main-map {
+  position: relative;
+  height: 100%; /* Fill map container */
+  width: 100%; /* Full width */
+  outline: 1px solid #ddd; /* Optional: Clean border outline */
+}
 
-  .label:first-child {
-		float: left;
-	}
-	.label:last-child {
-		float: right;
-	}
-
-  .selected-year-text {
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
-    color: white;
-    padding: 5px 10px;
-    font-size: 18px;
-    font-weight: bold;
-    font-family: Roboto;
-    border-radius: 5px;
-    z-index: 1000;
-  }
-  .reset-button {
+.legend-container {
   position: absolute;
-  top: 80px; /* Adjust to appear below zoom controls */
+  bottom: 10px;
+  left: 10px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+  padding: 5px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.year-display {
+  position: absolute;
+  top: 10px;
+  left: 50px;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  color: white;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  text-align: center;
+  min-width: 60px;
+  z-index: 1000;
+}
+
+.reset-button {
+  position: absolute;
+  top: 80px;
   left: 10px;
   background-color: white;
   border: 1px solid #ccc;
@@ -273,12 +315,11 @@
   border-radius: 3px;
   cursor: pointer;
   z-index: 1000;
-  transition: background 0.3s, box-shadow 0.3s;
+  width: 32px; /* Square button */
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px; /* Square button */
-  height: 32px;
 }
 
 .reset-button:hover {
@@ -291,4 +332,43 @@
   height: 20px;
   stroke: black;
 }
+
+.dashboard-header {
+  text-align: center;
+  padding: 10px 0;
+  background-color: #fff;
+  font-family: 'Roboto', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+}
+
+.dashboard-header h1 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500; /* Medium weight for minimalistic look */
+  font-size: 24px; /* Clean and readable size */
+  color: #333; /* Neutral dark gray text */
+  margin: 0; /* Remove default margins */
+  text-transform: uppercase; /* Optional: Make text uppercase */
+  letter-spacing: 1px; /* Add slight spacing for readability */
+}
+
+.map-header {
+  position: absolute;
+  top: 10px; /* Place the headline at the top of the map */
+  left: 50%;
+  transform: translateX(-50%); /* Center the headline horizontally */
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+  padding: 5px 15px; /* Add padding for a clean look */
+  font-family: 'Roboto', sans-serif;
+  font-size: 18px; /* Clean font size */
+  font-weight: 500; /* Medium font weight */
+  color: #333; /* Neutral dark text color */
+  text-align: center;
+  z-index: 1000; /* Ensure it appears above the map */
+}
+
+
 </style>
