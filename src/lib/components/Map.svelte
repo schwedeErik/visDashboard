@@ -13,7 +13,8 @@
     let crimeData;
     let geoJsonData;
     let geoJson;
-    $: selectedRegion = 'Russian Federation';
+    let selectedRegion = 'Russian Federation';
+    let selectionIsFixed = false;
 
     const russiaBounds = L.latLngBounds(
     [41.1851, 19.6389], 
@@ -48,6 +49,23 @@
           fillOpacity: 0.7
       };
     }
+
+    function setHighlightByName(regionName) {
+        geoJson.eachLayer(function (layer) {
+          const region = layer.feature.properties.name_latin;
+
+          // Skip resetting the style for the excluded region
+          if (region == regionName) {
+            layer.setStyle({
+              weight: 5,
+              color: '#666',
+              dashArray: '',
+              fillOpacity: 0.7,
+              fillColor: colorScale(getCrimeStat(minSelectedValue, region)),
+            });
+          }
+        });
+      }
     
     onMount(async () => {
       crimeData = await csv(base + '/data/russCrimes.csv');
@@ -55,6 +73,18 @@
                             zoomSnap: 0.1, // Allows fractional zoom levels
                             zoomDelta: 0.1, // Allows zooming in 0.5 increments
        });
+
+       // Define the bounding box (southwest and northeast corners)
+  const bounds = L.latLngBounds(
+    [30, -20],   // Southwest corner (latitude, longitude)
+    [85, 210]   // Northeast corner (latitude, longitude)
+  );
+
+  // Set the max bounds to limit the scrollable area
+  map.setMaxBounds(bounds);
+
+  // Optional: Add some "friction" to prevent dragging outside the bounds
+ 
       L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
         {
@@ -84,24 +114,78 @@
 
         layer.bringToFront();
         info.update(layer.feature.properties);
+        
+        if(selectionIsFixed)
+          return;
+
         selectedRegion = layer.feature.properties.name_latin;
       }
+      
+      function resetHighlightByName(regionName) {
+        geoJson.eachLayer(function (layer) {
+          const region = layer.feature.properties.name_latin;
 
+          // Skip resetting the style for the excluded region
+          if (region == regionName) {
+            layer.setStyle({
+              weight: 2,
+              color: 'white',
+              dashArray: '3',
+              fillOpacity: 0.7,
+              fillColor: colorScale(getCrimeStat(minSelectedValue, region)),
+            });
+          }
+        });
+      }
+      
+      
       function resetHighlight(e) {
         let layer = e.target 
-        layer.setStyle({
-        weight: 2,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.7,
-        fillColor: colorScale(getCrimeStat(minSelectedValue, layer.feature.properties.name_latin))
-        });
-        selectedRegion = 'Russian Federation';
+        let region = layer.feature.properties.name_latin;
+        
+        if(!(selectionIsFixed && selectedRegion == region)){
+          layer.setStyle({
+          weight: 2,
+          color: 'white',
+          dashArray: '3',
+          fillOpacity: 0.7,
+          fillColor: colorScale(getCrimeStat(minSelectedValue, layer.feature.properties.name_latin))
+          });
+        }
+        
+
+        if(!selectionIsFixed)
+          selectedRegion = 'Russian Federation';
         info.update();
       }
 
+      
+
       function zoomToFeature(e) {
-        map.fitBounds(e.target.getBounds());
+        //map.fitBounds(e.target.getBounds());
+        let clickedRegion = e.target.feature.properties.name_latin;
+        console.log("Clicked" + clickedRegion)
+        console.log("Selected" + selectedRegion)
+        
+        
+        if(clickedRegion == selectedRegion && !selectionIsFixed){
+          selectionIsFixed = true;
+          return;
+        }
+          
+
+        if(clickedRegion == selectedRegion && selectionIsFixed){
+          selectionIsFixed = false;
+          return;
+        }
+
+        if(clickedRegion != selectedRegion){
+          selectionIsFixed = true;
+          resetHighlightByName(selectedRegion);
+          selectedRegion = clickedRegion;
+          return;
+        }
+          
       }
 
       function onEachFeature(feature, layer) {
@@ -153,8 +237,11 @@
   let highCatagories = ["Theft", "Crimes in the Sphere of Economic Activity", "Robbery without violence"];
   let lowCatagories = ["Murder", "Rape", "Robbery with violence", "Extortion", "Hooliganism", "Intentional Bodily Harm"]
   $: if(minSelectedValue || maxSelectedValue){
-      if(geoJson)
-         geoJson.setStyle(feature => style(feature, minSelectedValue))
+      if(geoJson){
+        geoJson.setStyle(feature => style(feature, minSelectedValue))
+        setHighlightByName(selectedRegion)
+      }
+         
       
   } 
 
