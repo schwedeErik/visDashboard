@@ -42,8 +42,38 @@
 
         return groupedData;
     }
+
+    function shortenCrimeType(crimeType){
+        const crimeTypes = {
+        "Theft": "Theft",       // Vivid Green
+        "Crimes in the Sphere of Economic Activity": "Economic Crime",    // Turquoise
+        "Robbery without violence": "Robbery (No Violence)",     // Soft Purple
+        "Murder": "Murder",   // Bright Yellow
+        "Rape": "Rape",       // Vibrant Orange
+        "Robbery with violence": "Robbery (Violence)",// Emerald Green
+        "Extortion": "Extortion",    // Warm Brown
+        "Hooliganism": "Hooliganism", // Hot Pink
+        "Intentional Bodily Harm": "Bodily Harm"        // Muted Olive Green
+        };
+        // Return the corresponding color, or a default gray if the type is unknown
+        return crimeTypes[crimeType] || crimeType; // Default: Light Gray
+    }
     
-    
+    function mapColor(crimeType){
+        const colors = {
+        "Theft": "#2ECC71",       // Vivid Green
+        "Crimes in the Sphere of Economic Activity": "#1ABC9C",    // Turquoise
+        "Robbery without violence": "#9B59B6",     // Soft Purple
+        "Murder": "#F1C40F",   // Bright Yellow
+        "Rape": "#E67E22",       // Vibrant Orange
+        "Robbery with violence": "#27AE60",// Emerald Green
+        "Extortion": "#8D6E63",    // Warm Brown
+        "Hooliganism": "#FF69B4", // Hot Pink
+        "Intentional Bodily Harm": "#A3CB38"        // Muted Olive Green
+    };
+    // Return the corresponding color, or a default gray if the type is unknown
+    return colors[crimeType] || "#95A5A6"; // Default: Light Gray
+    }
     
     function generateChartData(){
         const filteredData = filterData(data);
@@ -58,12 +88,12 @@
             const sortedData = groupedData[crimeType].sort((a, b) => a.year - b.year);
 
             return {
-                label: crimeType,
+                label: shortenCrimeType(crimeType),
                 data: sortedData.map(item => item.value),
                 fill: false,
-                borderColor: colorScale(crimeType), // Adjust color as needed
+                borderColor: mapColor(crimeType), // Adjust color as needed
                 borderWidth: 1.5,
-                backgroundColor: colorScale(crimeType),
+                backgroundColor: mapColor(crimeType),
                 pointRadius: 0,
                 tension: 0.1
             };
