@@ -279,6 +279,7 @@
   <div class="main-div">
     <header class="dashboard-header">
       <h1>Crime Statistics Russia (2008-2023)</h1>
+      <p class="subtitle">Crimes per 100,000 people</p>
     </header>
     <div class="main-content">
       <div class="map-container">
@@ -515,6 +516,12 @@ html, body, #app {
   margin: 0; /* Remove default margins */
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+.subtitle {
+    color: gray;
+    font-size: 16px;
+    margin-top: -2px;
 }
 
 </style>

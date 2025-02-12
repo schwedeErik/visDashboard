@@ -178,38 +178,19 @@
         chart.options.scales.y.afterFit = function(axis) {axis.width = 150;};
         chart.update();
 
+        chartCanvas.addEventListener('mousemove', (event) => {
+            if (!isDragging) return;
 
-        chartCanvas.addEventListener('mousedown', (event) => {
-    const rect = chartCanvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
+            const rect = chartCanvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
 
-    // Calculate the current line's pixel position
-    const xCoord = chart.scales["x-axis-0"].getPixelForValue(startYear);
+            // Convert pixel position to x-axis value
+            const newValue = chart.scales["x-axis-0"].getValueForPixel(mouseX);
 
-    // Check if the click is close to the line
-    if (Math.abs(mouseX - xCoord) < 5) {
-        isDragging = true;
-    }
-});
-
-chartCanvas.addEventListener('mousemove', (event) => {
-    if (!isDragging) return;
-
-    const rect = chartCanvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-
-    // Convert pixel position to x-axis value
-    const newValue = chart.scales["x-axis-0"].getValueForPixel(mouseX);
-
-    // Update the line's position and redraw
-    startYear = newValue + 2008;
-    //chart.update();
-});
-
-chartCanvas.addEventListener('mouseup', () => {
-    isDragging = false;
-});
-
+            // Update the line's position and redraw
+            startYear = newValue + 2008;
+            //chart.update();
+        });
 
 	});
 
